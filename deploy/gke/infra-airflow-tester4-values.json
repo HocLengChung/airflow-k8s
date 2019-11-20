@@ -7,7 +7,7 @@
     "CLOUDSDK_COMPUTE_REGION": "europe-west1",
     "CLOUDSDK_COMPUTE_ZONE": "europe-west1-b",
     "AIRFLOW_DB_INSTANCE": "airflow2",
-    "CREATE_K8S_CLUSTER":true,
+    "CREATE_K8S_CLUSTER":false,
     "K8S_CLUSTER_NAME": "airflow",
     "AIRFLOW_BACKUP_INSTANCE": "",
     "AIRFLOW_AVAILABILITY_TYPE": "zonal",

@@ -101,26 +101,26 @@ gcloud beta container \
 # Wait for the kubernetes cluster to be ready
 sleep 30
 fi
-if $RESTORE_AIRFLOW_FROM_BACKUP
-then
-    AIRFLOW_BACKUP_ID=$(gcloud sql backups list \
-                        --instance=$AIRFLOW_BACKUP_INSTANCE \
-                        --limit=1 \
-                        --format json | jq .[0].id --raw-output)
+# if $RESTORE_AIRFLOW_FROM_BACKUP
+# then
+#     AIRFLOW_BACKUP_ID=$(gcloud sql backups list \
+#                         --instance=$AIRFLOW_BACKUP_INSTANCE \
+#                         --limit=1 \
+#                         --format json | jq .[0].id --raw-output)
 
-    if [ "$AIRFLOW_BACKUP_ID" != "null" ]
-    then
-        gcloud sql backups restore $AIRFLOW_BACKUP_ID \
-                --async \
-                --restore-instance=$AIRFLOW_DB_INSTANCE \
-                --backup-instance=$AIRFLOW_BACKUP_INSTANCE \
-                --quiet
-    fi
-else
-   until gcloud sql databases create $AIRFLOW_DB_NAME \
-            --instance=$AIRFLOW_DB_INSTANCE \
-            --async; do echo "Try again"; sleep 60; done 
-fi
+#     if [ "$AIRFLOW_BACKUP_ID" != "null" ]
+#     then
+#         gcloud sql backups restore $AIRFLOW_BACKUP_ID \
+#                 --async \
+#                 --restore-instance=$AIRFLOW_DB_INSTANCE \
+#                 --backup-instance=$AIRFLOW_BACKUP_INSTANCE \
+#                 --quiet
+#     fi
+# else
+#    until gcloud sql databases create $AIRFLOW_DB_NAME \
+#             --instance=$AIRFLOW_DB_INSTANCE \
+#             --async; do echo "Try again"; sleep 60; done 
+# fi
 
 if $CREATE_AUTOSCALING_POOL
 then
@@ -140,17 +140,17 @@ then
         --scopes=$(jq -r '.K8S_SCOPES | join(",")' $VALUES)
 fi
 
-if $CREATE_AIRFLOW_DB_INSTANCE
-then
-    gcloud sql users set-password postgres \
-        --host "ignore-this-only-for-mysql" \
-        --instance $AIRFLOW_DB_INSTANCE \
-        --password $AIRFLOW_DB_USER_PASSWORD
+# if $CREATE_AIRFLOW_DB_INSTANCE
+# then
+#     gcloud sql users set-password postgres \
+#         --host "ignore-this-only-for-mysql" \
+#         --instance $AIRFLOW_DB_INSTANCE \
+#         --password $AIRFLOW_DB_USER_PASSWORD
 
-    gcloud sql users create $AIRFLOW_DB_USER \
-        --instance=$AIRFLOW_DB_INSTANCE \
-        --password=$AIRFLOW_DB_USER_PASSWORD
-fi
+#     gcloud sql users create $AIRFLOW_DB_USER \
+#         --instance=$AIRFLOW_DB_INSTANCE \
+#         --password=$AIRFLOW_DB_USER_PASSWORD
+# fi
 
 if $CREATE_NFS_DISK
 then
@@ -175,11 +175,11 @@ kubectl create secret generic airflow \
     --from-file=fernet-key=/secrets/airflow/fernet-key \
     --from-file=sql_alchemy_conn=/secrets/airflow/sql_alchemy_conn
 
-sed -i.bak "s/pdName:.*/pdName: $NFS_DISK_NAME/g" ./airflow/values.yaml
-sed -i.bak "s/databaseInstance:.*/databaseInstance: $AIRFLOW_DB_INSTANCE/g" ./airflow/values.yaml
-sed -i.bak "s/project:.*/project: $CLOUDSDK_CORE_PROJECT/g" ./airflow/values.yaml
-sed -i.bak "s/region:.*/region: $CLOUDSDK_COMPUTE_REGION/g" ./airflow/values.yaml
-rm /airflow/values.yaml.bak
+# sed -i.bak "s/pdName:.*/pdName: $NFS_DISK_NAME/g" ./airflow/values.yaml
+# sed -i.bak "s/databaseInstance:.*/databaseInstance: $AIRFLOW_DB_INSTANCE/g" ./airflow/values.yaml
+# sed -i.bak "s/project:.*/project: $CLOUDSDK_CORE_PROJECT/g" ./airflow/values.yaml
+# sed -i.bak "s/region:.*/region: $CLOUDSDK_COMPUTE_REGION/g" ./airflow/values.yaml
+# rm /airflow/values.yaml.bak
 
 #helm upgrade --install "airflow" stable/airflow --namespace "airflow" 
 helm upgrade \
